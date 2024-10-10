@@ -1,49 +1,64 @@
 package com.pinson.tennis_backend.commons.controllers;
 
-import com.pinson.tennis_backend.commons.google.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
+import com.pinson.tennis_backend.commons.google.dtos.ApiErrorDTO;
+import com.pinson.tennis_backend.commons.google.dtos.ErrorDTO;
+import com.pinson.tennis_backend.commons.interceptors.UUIDInterceptor;
+import com.pinson.tennis_backend.commons.responses.BaseApiResponse;
+import com.pinson.tennis_backend.commons.responses.ResponseFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
-import java.util.UUID;
+import java.util.List;
 
 public abstract class BaseController {
-    private final String version;
+    @Autowired
+    private ResponseFactory responseFactory;
 
-    public BaseController(String version) {
-        this.version = version;
+    public BaseController() {
+        //
     }
 
-    protected String getVersion() {
-        return version;
+    protected String getUUID() {
+        return UUIDInterceptor.getUUID();
     }
 
-    protected String generateId() {
-        return UUID.randomUUID().toString();
-    }
-
-    protected String getContextFromRequest(HttpServletRequest request) {
-        // returns parameter context from request
-        return request.getParameter("context");
-    }
-
-    protected <T> ApiResponse<T> generateResponse(
-        HttpServletRequest request,
-        String id,
+    protected <T> BaseApiResponse<T> createResponse(
+        HttpStatus status,
         String method,
-        T data
+        Object object
     ) {
-        return ApiResponse.of(
-            this.getVersion(),
-            this.getContextFromRequest(request),
-            id,
+        return this.responseFactory.create(
+            object,
+            status,
+            this.getUUID(),
             method,
-            data
+            null
         );
     }
 
+    protected <T> BaseApiResponse<T> createExceptionResponse(
+        HttpStatus status,
+        String method,
+        String domain,
+        Exception exception
+    ) {
+        final ErrorDTO error = ErrorDTO.builder()
+            .domain(domain)
+            .reason(exception.getClass().getSimpleName())
+            .message(exception.getMessage())
+            .build();
 
+        final ApiErrorDTO apiError = ApiErrorDTO.builder()
+            .code(String.valueOf(status.value()))
+            .message(error.getMessage())
+            .errors(List.of(error))
+            .build();
 
-
-
-
+        return this.createResponse(
+            status,
+            method,
+            apiError
+        );
+    }
 
 }

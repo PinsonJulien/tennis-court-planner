@@ -12,46 +12,11 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class ApiResponse<T> {
-    private String apiVersion = null;
-    private String context = null;
-    private String id = null;
-    private String method = null;
-    //private Object params = null;
-    private T data = null;
-    private ApiErrorDTO error = null;
-
-    private ApiResponse() {}
-
-    public static <T> ApiResponse<T> of(
-        String apiVersion,
-        String context,
-        String id,
-        String method,
-        T data
-    ) {
-        return ApiResponse.<T>builder()
-            .apiVersion(apiVersion)
-            .context(context)
-            .id(id)
-            .method(method)
-            .data(data)
-            .build();
-    }
-
-    public static <T> ApiResponse<T> of(
-        String apiVersion,
-        String context,
-        String id,
-        String method,
-        ApiErrorDTO error
-    ) {
-        return ApiResponse.<T>builder()
-            .apiVersion(apiVersion)
-            .context(context)
-            .id(id)
-            .method(method)
-            .error(error)
-            .build();
-    }
-
+    private String apiVersion;
+    private String context;
+    private String id;
+    private String method;
+    private Object params;
+    private T data;
+    private ApiErrorDTO error;
 }

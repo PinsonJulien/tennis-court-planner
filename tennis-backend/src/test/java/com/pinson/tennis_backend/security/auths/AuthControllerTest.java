@@ -1,9 +1,9 @@
 package com.pinson.tennis_backend.security.auths;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pinson.tennis_backend.security.auths.dtos.requests.LoginRequest;
+import com.pinson.tennis_backend.security.auths.dtos.requests.SignupRequest;
 import com.pinson.tennis_backend.security.jwts.JwtUtils;
-import com.pinson.tennis_backend.security.users.CreateUserDTO;
 import com.pinson.tennis_backend.security.users.IUserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

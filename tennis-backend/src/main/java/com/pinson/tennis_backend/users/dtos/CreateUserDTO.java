@@ -1,4 +1,4 @@
-package com.pinson.tennis_backend.security.users;
+package com.pinson.tennis_backend.users.dtos;
 
 public record CreateUserDTO(
     String username,

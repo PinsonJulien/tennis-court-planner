@@ -1,6 +1,6 @@
 package com.pinson.tennis_backend.security.jwts;
 
-import com.pinson.tennis_backend.security.users.IUserService;
+import com.pinson.tennis_backend.users.services.IUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private IUserService userService;
+    private IUserDetailsService userDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
 
@@ -39,7 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             final String token = this.extractToken(request);
             if (token != null && this.jwtUtils.validateJwtToken(token)) {
                 final String username = this.jwtUtils.getUsernameFromJwtToken(token);
-                final UserDetails userDetails = this.userService.loadUserByUsername(username);
+                final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
                 final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     userDetails,
