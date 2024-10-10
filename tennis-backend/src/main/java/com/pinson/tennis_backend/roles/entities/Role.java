@@ -4,6 +4,7 @@ import com.pinson.tennis_backend.users.entities.User;
 import com.pinson.tennis_backend.users_roles.entities.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Role {
+public class Role implements GrantedAuthority {
 
     /**************************************************************************
      * Fields
@@ -37,6 +38,16 @@ public class Role {
     private Set<UserRole> userRoles = new HashSet<>();
 
     /**************************************************************************
+     * GrantedAuthority implementation
+     **************************************************************************/
+
+    @Override
+    public String getAuthority() {
+        final String prefix = "ROLE_";
+        return prefix + this.name;
+    }
+
+    /**************************************************************************
      * Helper methods
      **************************************************************************/
 
@@ -47,4 +58,5 @@ public class Role {
         }
         return users;
     }
+
 }

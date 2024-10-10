@@ -57,7 +57,8 @@ public class User implements UserDetails {
     @OneToMany(
         mappedBy = "user",
         cascade = CascadeType.ALL,
-        orphanRemoval = true
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
     )
     private Set<UserRole> userRoles = new HashSet<>();
 
@@ -67,7 +68,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        // Add roles to the authorities
+        return this.userRoles.stream()
+            .map(UserRole::getRole)
+            .collect(Collectors.toSet());
     }
 
     @Override

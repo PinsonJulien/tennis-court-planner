@@ -3,11 +3,13 @@ package com.pinson.tennis_backend.roles.controllers;
 import com.pinson.tennis_backend.commons.controllers.BaseController;
 import com.pinson.tennis_backend.commons.responses.BaseApiResponse;
 import com.pinson.tennis_backend.roles.dtos.RoleDTO;
+import com.pinson.tennis_backend.roles.enums.RoleEnum;
 import com.pinson.tennis_backend.roles.services.IRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,7 @@ public class RoleController extends BaseController {
     private IRoleService roleService;
 
     @GetMapping("/")
+    //@PreAuthorize("hasRole('SECRETARY')")
     public BaseApiResponse<List<RoleDTO>> index() {
         final String method = "roles.index";
         final List<RoleDTO> roles = this.roleService.findAll();
