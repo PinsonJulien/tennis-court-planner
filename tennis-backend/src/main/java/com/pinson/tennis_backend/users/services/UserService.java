@@ -33,12 +33,6 @@ public class UserService implements IUserService {
     @Override
     public List<UserDTO> findAll() {
         final List<User> users = this.userRepository.findAll();
-
-        // load roles
-        for (User user : users) {
-            user.getRoles().size();
-        }
-
         return this.createDTO(users);
     }
 
@@ -74,12 +68,7 @@ public class UserService implements IUserService {
             .password(this.encodePassword(user.password()))
             .build();
 
-        System.out.println("create");
-        System.out.println(newUser.getRoles());
-
-        System.out.println("create2");
         final User createdUser = this.userRepository.save(newUser);
-        System.out.println(createdUser.getRoles());
         return UserDTO.from(createdUser);
     }
 
@@ -148,14 +137,8 @@ public class UserService implements IUserService {
             return this.createDTO(user);
 
         user.addRole(role);
-        System.out.println("addRole");
-        System.out.println(user.getRoles());
         final User savedUser = this.userRepository.save(user);
-        System.out.println("addRole2");
-        System.out.println(savedUser.getRoles());
-        return this.createDTO(
-            savedUser
-        );
+        return this.createDTO(savedUser);
     }
 
     @Override
@@ -167,32 +150,19 @@ public class UserService implements IUserService {
             return this.createDTO(user);
 
         user.removeRole(role);
-        return this.createDTO(
-            this.userRepository.save(user)
-        );
+        return this.createDTO(this.userRepository.save(user));
     }
 
     @Override
     public List<UserDTO> findUsersByRole(Long roleId) {
         final Role role = this.getRole(roleId);
-        final List<User> users = this.userRepository.findAllByRoles(role);
-        // print all
-        System.out.println("findUsersByRole");
-        for (User user : users) {
-            System.out.println(user);
-        }
-        final List<User> users2 = this.userRepository.findAllByRolesContains(role);
-        // print all
-        System.out.println("findUsersByRole2");
-        for (User user : users2) {
-            System.out.println(user);
-        }
+        List<User> users = this.userRepository.findAllByUserRolesRole(role);
         return this.createDTO(users);
     }
 
-    /**************************************************************************/
-    /* Helper methods */
-    /**************************************************************************/
+    /**************************************************************************
+    * Helper methods
+    **************************************************************************/
 
     protected String encodePassword(String password) {
         return this.passwordEncoder.encode(password);

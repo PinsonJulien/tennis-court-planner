@@ -36,33 +36,9 @@ public class GenerateSecurityDatabaseRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         // On Application startup, create the roles if they do not exist.
-        //this.createDefaultRoles();
+        this.createDefaultRoles();
         // If no super admin exists, we create one.
-        //this.createSuperAdministratorAccount();
-
-        // print all users
-        logger.info("All users:");
-        final List<UserDTO> users = this.userService.findAll();
-        users.forEach(
-            user -> {
-                logger.info("User: {}", user.username());
-                logger.info("Roles: {}", user.roles());
-            }
-        );
-
-        // print super admin and it's roles
-
-        final RoleDTO superAdminRole = this.roleService.findByName(SUPER_ADMINISTRATOR_ROLE.name());
-        final List<UserDTO> superAdmins = this.userService.findUsersByRole(superAdminRole.id());
-        superAdmins.forEach(
-            superAdmin -> {
-                logger.info("Super administrator: {}", superAdmin.username());
-                logger.info("Roles: {}", superAdmin.roles());
-            }
-        );
-
-
-
+        this.createSuperAdministratorAccount();
     }
 
     private void createDefaultRoles() {
@@ -92,9 +68,7 @@ public class GenerateSecurityDatabaseRunner implements ApplicationRunner {
         // Check if the super administrator role exists.
         final String roleName = SUPER_ADMINISTRATOR_ROLE.name();
         final RoleDTO superAdministratorRole = this.roleService.findByName(roleName);
-        System.out.println("trying to find role: " + roleName);
         final List<UserDTO> superAdministrators = this.userService.findUsersByRole(superAdministratorRole.id());
-        System.out.println("super admins: " + superAdministrators);
 
         if (!superAdministrators.isEmpty())
             return;

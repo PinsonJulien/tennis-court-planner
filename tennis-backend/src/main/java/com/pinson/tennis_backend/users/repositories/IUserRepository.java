@@ -47,14 +47,9 @@ public interface IUserRepository extends JpaRepository<User, UUID> {
     );
 
     // find all by role
-    List<User> findAllByRoles(
+    List<User> findAllByUserRolesRole(
         @Param("role")
         Role role
-    );
-
-    List<User> findAllByRolesContains(
-            @Param("role")
-            Role role
     );
 
     // override delete method to set deletedAt

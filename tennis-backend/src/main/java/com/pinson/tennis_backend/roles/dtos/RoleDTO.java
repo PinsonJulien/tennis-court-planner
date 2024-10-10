@@ -21,8 +21,6 @@ public record RoleDTO(
     }
 
     public static List<RoleDTO> from(Collection<Role> roles) {
-        System.out.println("RoleDTO.from(Collection<Role> roles)");
-        System.out.println(roles);
         return roles.stream()
             .map(RoleDTO::from)
             .toList();

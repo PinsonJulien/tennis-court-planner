@@ -1,22 +1,25 @@
 package com.pinson.tennis_backend.roles.entities;
 
 import com.pinson.tennis_backend.users.entities.User;
+import com.pinson.tennis_backend.users_roles.entities.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Entity
+@Table(name = "roles")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "roles")
+@Getter
+@Setter
 public class Role {
+
+    /**************************************************************************
+     * Fields
+     **************************************************************************/
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +29,22 @@ public class Role {
     private String name;
 
     @Builder.Default
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    @OneToMany(
+        mappedBy = "role",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private Set<UserRole> userRoles = new HashSet<>();
+
+    /**************************************************************************
+     * Helper methods
+     **************************************************************************/
+
+    public Set<User> getUsers() {
+        final Set<User> users = new HashSet<>();
+        for (UserRole userRole : this.userRoles) {
+            users.add(userRole.getUser());
+        }
+        return users;
+    }
 }

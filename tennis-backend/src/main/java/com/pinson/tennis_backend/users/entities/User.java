@@ -1,11 +1,9 @@
 package com.pinson.tennis_backend.users.entities;
 
 import com.pinson.tennis_backend.roles.entities.Role;
+import com.pinson.tennis_backend.users_roles.entities.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,14 +11,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Data
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "users")
 public class User implements UserDetails {
+
+    /**************************************************************************
+     * Fields
+     **************************************************************************/
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -48,14 +53,17 @@ public class User implements UserDetails {
     @Column(name = "deleted_at", nullable = true)
     private LocalDateTime deletedAt;
 
-    //@Builder.Default
-    @ManyToMany()
-    @JoinTable(
-        name = "users_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+    @Builder.Default
+    @OneToMany(
+        mappedBy = "user",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
-    private Set<Role> roles;// = new HashSet<>();
+    private Set<UserRole> userRoles = new HashSet<>();
+
+    /**************************************************************************
+     * UserDetails methods
+     **************************************************************************/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -87,6 +95,10 @@ public class User implements UserDetails {
         return (this.deletedAt == null);
     }
 
+    /**************************************************************************
+     * Helper methods
+     **************************************************************************/
+
     public void setPassword(String password) {
         // When password is set, save the previous password.
         if (this.isPasswordSet())
@@ -99,15 +111,25 @@ public class User implements UserDetails {
         return this.password != null;
     }
 
-    public boolean hasRole(Role role) {
-        return this.roles.contains(role);
+    public void addRole(final Role role) {
+        final UserRole userRole = UserRole.builder()
+            .user(this)
+            .role(role)
+            .build();
+        this.userRoles.add(userRole);
     }
 
-    public void addRole(Role role) {
-        this.roles.add(role);
+    public void removeRole(final Role role) {
+        this.userRoles.removeIf(userRole -> userRole.getRole().equals(role));
     }
 
-    public void removeRole(Role role) {
-        this.roles.remove(role);
+    public boolean hasRole(final Role role) {
+        return this.userRoles.stream().anyMatch(userRole -> userRole.getRole().equals(role));
+    }
+
+    public Set<Role> getRoles() {
+        return this.userRoles.stream()
+            .map(UserRole::getRole)
+            .collect(Collectors.toSet());
     }
 }
