@@ -29,7 +29,8 @@ public class RoleService implements IRoleService {
 
     @Override
     public RoleDTO findById(Long id) {
-        return null;
+        final Role role = this.roleRepository.findById(id).orElseThrow();
+        return RoleDTO.from(role);
     }
 
     @Override

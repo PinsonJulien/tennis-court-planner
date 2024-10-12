@@ -1,6 +1,7 @@
 package com.pinson.tennis_backend.users.services;
 
 import com.pinson.tennis_backend.roles.entities.Role;
+import com.pinson.tennis_backend.roles.enums.RoleEnum;
 import com.pinson.tennis_backend.roles.repositories.IRoleRepository;
 import com.pinson.tennis_backend.users.dtos.CreateUserDTO;
 import com.pinson.tennis_backend.users.dtos.PartialUpdateUserDTO;
@@ -67,6 +68,10 @@ public class UserService implements IUserService {
             .email(user.email())
             .password(this.encodePassword(user.password()))
             .build();
+
+        // Add default role
+        final Role defaultRole = this.roleRepository.findByName(RoleEnum.USER.name()).orElseThrow();
+        newUser.addRole(defaultRole);
 
         final User createdUser = this.userRepository.save(newUser);
         return UserDTO.from(createdUser);
