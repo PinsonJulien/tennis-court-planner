@@ -12,6 +12,7 @@ import com.pinson.tennis_backend.courts.repositories.ICourtRepository;
 import com.pinson.tennis_backend.file_storages.services.IFileStorageService;
 import com.pinson.tennis_backend.users.entities.User;
 import com.pinson.tennis_backend.users.repositories.IUserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,17 @@ public class CourtService implements ICourtService {
 
     @Override
     public CourtDTO create(CreateCourtDTO createCourtDTO) {
-        return null;
+        final Court newCourt = Court.builder()
+            .name(createCourtDTO.name())
+            .description(createCourtDTO.description())
+            .address(createCourtDTO.address())
+            // As of now, we don't store the image locally, we store the image URL from external websites.
+            // This solution is temporary and will be replaced with a proper file storage solution using the FileStorageService.
+            .imageUrl(createCourtDTO.imageUrl())
+            .build();
+
+        final Court createdCourt = this.courtRepository.save(newCourt);
+        return CourtDTO.from(createdCourt);
     }
 
     @Override
@@ -64,13 +75,29 @@ public class CourtService implements ICourtService {
     }
 
     @Override
-    public CourtDTO partialUpdate(Long id, PartialUpdateCourtDTO partialUpdateCourtDTO) {
-        throw new UnsupportedOperationException("Not implemented");
+    public CourtDTO partialUpdate(
+        Long id,
+        @Valid PartialUpdateCourtDTO partialUpdateCourtDTO
+    ) {
+        final Court court = this.courtRepository.findById(id).orElseThrow();
+
+        if (partialUpdateCourtDTO.isNameSet())
+            court.setName(partialUpdateCourtDTO.getName());
+        if (partialUpdateCourtDTO.isDescriptionSet())
+            court.setDescription(partialUpdateCourtDTO.getDescription());
+        if (partialUpdateCourtDTO.isAddressSet())
+            court.setAddress(partialUpdateCourtDTO.getAddress());
+        if (partialUpdateCourtDTO.isImageUrlSet())
+            court.setImageUrl(partialUpdateCourtDTO.getImageUrl());
+
+        final Court updatedCourt = this.courtRepository.save(court);
+        return CourtDTO.from(updatedCourt);
     }
 
     @Override
     public void delete(Long id) {
-        throw new UnsupportedOperationException("Not implemented");
+        final Court court = this.courtRepository.findById(id).orElseThrow();
+        this.courtRepository.delete(court);
     }
 
     @Override

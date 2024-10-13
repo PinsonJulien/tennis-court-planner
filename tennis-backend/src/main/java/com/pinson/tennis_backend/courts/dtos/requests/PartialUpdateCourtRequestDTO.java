@@ -1,5 +1,7 @@
-package com.pinson.tennis_backend.courts.dtos;
+package com.pinson.tennis_backend.courts.dtos.requests;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pinson.tennis_backend.courts.dtos.PartialUpdateCourtDTO;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PartialUpdateCourtDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class PartialUpdateCourtRequestDTO {
     @Size(min = 1, max = 255, message = "Name must be between 1 and 255 characters")
     private String name;
 
@@ -24,19 +27,7 @@ public class PartialUpdateCourtDTO {
     @Pattern(regexp = "^(http|https)://.*$", message = "Image URL must be a valid URL")
     private String imageUrl;
 
-    public boolean isNameSet() {
-        return this.name != null;
-    }
-
-    public boolean isDescriptionSet() {
-        return this.description != null;
-    }
-
-    public boolean isAddressSet() {
-        return this.address != null;
-    }
-
-    public boolean isImageUrlSet() {
-        return this.imageUrl != null;
+    public PartialUpdateCourtDTO toPartialUpdateCourtDTO() {
+        return new PartialUpdateCourtDTO(name, description, address, imageUrl);
     }
 }

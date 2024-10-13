@@ -5,10 +5,10 @@ import com.pinson.tennis_backend.courts.dtos.CreateCourtDTO;
 public record CreateCourtRequestDTO(
     String name,
     String description,
-    String location,
+    String address,
     String imageUrl
 ) {
     public CreateCourtDTO toCreateCourtDTO() {
-        return new CreateCourtDTO(name, description, location, imageUrl);
+        return new CreateCourtDTO(name, description, address, imageUrl);
     }
 }

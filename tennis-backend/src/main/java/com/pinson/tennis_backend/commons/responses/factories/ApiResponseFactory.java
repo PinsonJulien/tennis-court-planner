@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -104,6 +105,48 @@ public class ApiResponseFactory implements IApiResponseFactory {
             params
         );
     }
+
+    @Override
+    public <T> BaseApiResponse<T> createExceptionApiResponse(
+        final Exception exception,
+        final Collection<ErrorDTO> errors,
+        final HttpStatus status,
+        final String method,
+        final String domain
+    ) {
+        return this.createExceptionApiResponse(
+            exception,
+            errors,
+            status,
+            method,
+            domain,
+            null
+        );
+    }
+
+    @Override
+    public <T> BaseApiResponse<T> createExceptionApiResponse(
+        final Exception exception,
+        final Collection<ErrorDTO> errors,
+        final HttpStatus status,
+        final String method,
+        final String domain,
+        final String params
+    ) {
+        final ApiErrorDTO apiError = ApiErrorDTO.builder()
+            .code(String.valueOf(status.value()))
+            .message(exception.getMessage())
+            .errors(errors.stream().toList())
+            .build();
+
+        return this.create(
+            apiError,
+            status,
+            method,
+            params
+        );
+    }
+
 
     @Override
     public void assignBaseApiResponseToHttpServletResponse(

@@ -14,4 +14,8 @@ public class BaseApiResponse<T> extends ResponseEntity<ApiResponse<T>> {
             status
         );
     }
+
+    public ResponseEntity<Object> toResponseEntity() {
+        return new ResponseEntity<>(this.getBody(), this.getStatusCode());
+    }
 }

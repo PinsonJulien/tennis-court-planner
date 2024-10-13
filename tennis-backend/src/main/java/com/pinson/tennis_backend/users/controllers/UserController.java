@@ -61,6 +61,33 @@ public class UserController extends BaseController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public BaseApiResponse<UserDTO> destroy(
+        @PathVariable final UUID id
+    ) {
+        final String method = "users.destroy";
+        try {
+            this.userService.delete(id);
+
+            return this.createResponse(
+                HttpStatus.NO_CONTENT,
+                method,
+                null
+            );
+        } catch (Exception e) {
+            logger.error("Error: {}", e.getMessage());
+            final HttpStatus status = HttpStatus.NOT_FOUND;
+            final String domain = "User";
+
+            return this.createExceptionResponse(
+                status,
+                method,
+                domain,
+                e
+            );
+        }
+    }
+
     // add role to user
     @PostMapping("/{id}/roles")
     public BaseApiResponse<UserDTO> addRole(

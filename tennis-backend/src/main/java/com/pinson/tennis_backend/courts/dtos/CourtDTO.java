@@ -3,6 +3,7 @@ package com.pinson.tennis_backend.courts.dtos;
 import com.pinson.tennis_backend.bookings.dtos.BookingDTO;
 import com.pinson.tennis_backend.courts.entities.Court;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,8 @@ public record CourtDTO (
     String description,
     String address,
     String imageUrl,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt,
     Optional<List<BookingDTO>> bookings
 ) {
     public static CourtDTO from(Court court) {
@@ -25,13 +28,15 @@ public record CourtDTO (
         final String description = court.getDescription();
         final String address = court.getAddress();
         final String imageUrl = court.getImageUrl();
+        final LocalDateTime createdAt = court.getCreatedAt();
+        final LocalDateTime updatedAt = court.getUpdatedAt();
         Optional<List<BookingDTO>> bookings = Optional.empty();
 
         if (includeRelations) {
             bookings = Optional.of(BookingDTO.from(court.getBookings(), false));
         }
 
-        return new CourtDTO(id, name, description, address, imageUrl, bookings);
+        return new CourtDTO(id, name, description, address, imageUrl, createdAt, updatedAt, bookings);
     }
 
     public static List<CourtDTO> from (Collection<Court> courts) {
