@@ -35,6 +35,9 @@ public interface IUserRepository extends JpaRepository<User, UUID> {
     // findAll non deleted users
     List<User> findAllByDeletedAtIsNull();
 
+    // find all deleted users
+    List<User> findAllByDeletedAtIsNotNull();
+
     // find user by id and not deleted
     Optional<User> findByIdAndDeletedAtIsNull(
         @Param("id")

@@ -106,7 +106,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> findAllDeleted() {
-        final List<User> users = this.userRepository.findAllByDeletedAtIsNull();
+        final List<User> users = this.userRepository.findAllByDeletedAtIsNotNull();
         return this.createDTO(users);
     }
 

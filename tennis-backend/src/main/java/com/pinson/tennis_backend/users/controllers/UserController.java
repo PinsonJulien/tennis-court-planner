@@ -61,6 +61,18 @@ public class UserController extends BaseController {
         }
     }
 
+    @GetMapping("/deleted")
+    public BaseApiResponse<List<UserDTO>> indexDeleted() {
+        final String method = "users.index.deleted";
+        final List<UserDTO> users = this.userService.findAllDeleted();
+
+        return this.createResponse(
+            HttpStatus.OK,
+            method,
+            users
+        );
+    }
+
     @DeleteMapping("/{id}")
     public BaseApiResponse<UserDTO> destroy(
         @PathVariable final UUID id
@@ -88,7 +100,6 @@ public class UserController extends BaseController {
         }
     }
 
-    // add role to user
     @PostMapping("/{id}/roles")
     public BaseApiResponse<UserDTO> addRole(
         @PathVariable final UUID id,
@@ -117,7 +128,6 @@ public class UserController extends BaseController {
         }
     }
 
-    // remove role from user
     @DeleteMapping("/{id}/roles/{roleId}")
     public BaseApiResponse<UserDTO> removeRole(
         @PathVariable final UUID id,
