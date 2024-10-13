@@ -49,6 +49,12 @@ public class AuthService implements IAuthService {
         this.jwtTokenProvider.blacklistToken(logoutDTO.token());
     }
 
+    @Override
+    public UserDTO getCurrentUser() {
+        final String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.userService.findByUsername(username);
+    }
+
     /*************************************************************************
      * Helper methods
      *************************************************************************/
