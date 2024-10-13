@@ -34,8 +34,16 @@ export class UserService extends ApiService {
         return this.request<CourtDTO>(RequestAction.GET, id);
     }
 
+    public findAllDeleted(): Observable<ApiResponse<UserDTO[]>> {
+        return this.request<UserDTO[]>(RequestAction.GET, 'deleted');
+    }
+
     public delete(id: string): Observable<ApiResponse<void>> {
         return this.request<void>(RequestAction.DELETE, id);
+    }
+
+    public restore(id: string): Observable<ApiResponse<void>> {
+        return this.request<void>(RequestAction.POST, `${id}/restore`);
     }
 
     public addRoleToUser(id: string, addRoleToUserDto: AddRoleToUserDTO): Observable<ApiResponse<UserDTO>> {

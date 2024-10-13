@@ -23,6 +23,7 @@ export class UserAdminPage implements OnInit {
      * ************************************************************************/
 
     protected users: UserDTO[] = [];
+    protected deletedUsers: UserDTO[] = [];
     protected roles: RoleDTO[] = [];
 
 
@@ -50,6 +51,7 @@ export class UserAdminPage implements OnInit {
 
     protected refresh(): void {
         this.fetchUsers();
+        this.fetchDeletedUsers();
         this.fetchRoles();
     }
 
@@ -61,6 +63,17 @@ export class UserAdminPage implements OnInit {
             }
 
             this.users = response.data!;            
+        });
+    }
+
+    protected fetchDeletedUsers(): void {
+        this.userService.findAllDeleted().subscribe((response: ApiResponse<UserDTO[]>) => {
+            if (response.error) {
+                console.error('Error fetching deleted users:', response.error);
+                return;
+            }
+
+            this.deletedUsers = response.data!;
         });
     }
 
@@ -77,6 +90,16 @@ export class UserAdminPage implements OnInit {
 
     protected deleteUser(user: UserDTO): void {
         this.userService.delete(user.id).subscribe((response: ApiResponse<void>) => {
+            if (response.error) {
+                return;
+            }
+
+            this.refresh();
+        });
+    }
+
+    protected restoreUser(user: UserDTO): void {
+        this.userService.restore(user.id).subscribe((response: ApiResponse<void>) => {
             if (response.error) {
                 return;
             }

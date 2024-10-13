@@ -55,9 +55,7 @@ export abstract class ApiService {
         if (token) {
             this.httpOptions.headers = this.httpOptions.headers.set('Authorization', token);
         }
-
-        this.httpOptions.headers = this.httpOptions.headers.set('Authorization', 'Bearer ' + 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUl9BRE1JTiIsImlhdCI6MTcyODgxOTQxOCwiZXhwIjoxNzI4ODQ5NDE4fQ.wmLjHzvtSXc6DHDsPRBdJpEmhF2lo5gu_arCC6CAWlxX-t5HU9USDMVTkjEttdU9_ec3P61y1h5uQ6ZFXEE7HQ');
-
+        
         const options = {
             ...this.httpOptions,
             params: params,

@@ -100,6 +100,33 @@ public class UserController extends BaseController {
         }
     }
 
+    @PostMapping("/{id}/restore")
+    public BaseApiResponse<UserDTO> restore(
+        @PathVariable final UUID id
+    ) {
+        final String method = "users.restore";
+        try {
+            final UserDTO user = this.userService.restore(id);
+
+            return this.createResponse(
+                HttpStatus.OK,
+                method,
+                user
+            );
+        } catch (Exception e) {
+            logger.error("Error: {}", e.getMessage());
+            final HttpStatus status = HttpStatus.NOT_FOUND;
+            final String domain = "User";
+
+            return this.createExceptionResponse(
+                status,
+                method,
+                domain,
+                e
+            );
+        }
+    }
+
     @PostMapping("/{id}/roles")
     public BaseApiResponse<UserDTO> addRole(
         @PathVariable final UUID id,

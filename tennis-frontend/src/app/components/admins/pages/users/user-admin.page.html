@@ -28,5 +28,24 @@
             </td>
         </tbody>
       </table>
+
+      <h2>Deleted users</h2>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of deletedUsers">
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <button class="btn btn-primary" (click)="restoreUser(user)">Restore</button>
+                </td>
+            </tbody>
+        </table>
     </div>
   </div>
