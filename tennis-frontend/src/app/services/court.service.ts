@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "./api.service";
-import { map, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import { RequestAction } from "./types/requests/request-action.enum";
 import { ApiResponse } from "../dtos/api/api.response.dto";
 import { CourtDTO } from "../dtos/courts/court.dto";
