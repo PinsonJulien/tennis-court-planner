@@ -7,6 +7,7 @@ import { CourtDTO } from "../dtos/courts/court.dto";
 import { CreateCourtDTO } from "../dtos/courts/create-court.dto";
 import { PartialUpdateCourtDTO } from "../dtos/courts/partial-update-court.dto";
 import { CreateBookingForCourtDTO } from "../dtos/courts/create-booking-for-court.dto";
+import { DateHelper } from "../helpers/date.helper";
 
 @Injectable({providedIn: 'root'})
 export class CourtService extends ApiService {
@@ -47,8 +48,18 @@ export class CourtService extends ApiService {
         return this.request<void>(RequestAction.DELETE, id);
     }
 
-    public book(id: number, body: CreateBookingForCourtDTO): Observable<ApiResponse<CourtDTO>> {
-        return this.request<CourtDTO>(RequestAction.POST, `${id}/book`, {}, body);
+    public book(id: number, body: CreateBookingForCourtDTO): Observable<ApiResponse<CourtDTO>> {        
+        // Format the date to remove the timezone, as the server expects it in this format.
+        const formattedBody = {
+            startDateTime: DateHelper.toDateWithoutTimezone(body.startDateTime),
+            endDateTime: DateHelper.toDateWithoutTimezone(body.endDateTime)
+        };
+
+        return this.request<CourtDTO>(RequestAction.POST, `${id}/bookings`, {}, formattedBody);
+    }
+
+    public cancelBooking(id: number, bookingId: number): Observable<ApiResponse<CourtDTO>> {
+        return this.request<CourtDTO>(RequestAction.DELETE, `${id}/bookings/${bookingId}`);
     }
 
 }

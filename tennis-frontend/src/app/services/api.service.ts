@@ -55,7 +55,7 @@ export abstract class ApiService {
         if (token) {
             this.httpOptions.headers = this.httpOptions.headers.set('Authorization', token);
         }
-        
+
         const options = {
             ...this.httpOptions,
             params: params,
@@ -91,9 +91,11 @@ export abstract class ApiService {
         // Automatically map the response to an ApiResponse object
         return response.pipe(
             map((res: any) => {
+                console.error(res);
                 return new ApiResponse<T>(res);
             }),
             catchError((err) => {
+                console.error(err);
                 // On 401 Unauthorized, remove the token from local storage.
                 if (err.status === 401) {
                     this.localStorage.removeBearerToken();

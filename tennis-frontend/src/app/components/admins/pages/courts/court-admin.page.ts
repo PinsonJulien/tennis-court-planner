@@ -57,7 +57,6 @@ export class CourtAdminPage implements OnInit {
                 }
 
                 this.courts = response.data!;
-                console.log(this.courts);
             });
     }
 
@@ -86,7 +85,7 @@ export class CourtAdminPage implements OnInit {
     }
 
     protected onUpdateSubmit(id: number) {
-        
+
     }
 
     protected onDeleteSubmit(id: number) {

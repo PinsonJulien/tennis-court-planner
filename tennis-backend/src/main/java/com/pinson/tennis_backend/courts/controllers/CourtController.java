@@ -51,6 +51,7 @@ public class CourtController extends BaseController {
     public BaseApiResponse<CourtDTO> show(
         @PathVariable final Long id
     ) {
+        logger.info("CALLED. id: {}", id);
         final String method = "courts.show";
         try {
             final CourtDTO court = this.courtService.findById(id);
@@ -172,6 +173,36 @@ public class CourtController extends BaseController {
 
             return this.createResponse(
                 HttpStatus.CREATED,
+                method,
+                court
+            );
+        } catch (Exception e) {
+            final HttpStatus status = HttpStatus.BAD_REQUEST;
+            final String domain = "Court";
+
+            return this.createExceptionResponse(
+                status,
+                method,
+                domain,
+                e
+            );
+        }
+    }
+
+    @DeleteMapping("/{id}/bookings/{bookingId}")
+    public BaseApiResponse<CourtDTO> destroyBooking(
+        @PathVariable final Long id,
+        @PathVariable final Long bookingId,
+        @AuthenticationPrincipal final UserDetails userDetails
+    ) {
+        final String method = "courts.bookings.destroy";
+        try {
+            // Get current user
+            final UserDTO user = this.userService.findByUsername(userDetails.getUsername());
+            final CourtDTO court = this.courtService.cancelBooking(id, bookingId, user);
+
+            return this.createResponse(
+                HttpStatus.OK,
                 method,
                 court
             );

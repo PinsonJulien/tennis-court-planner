@@ -1,0 +1,21 @@
+<div>
+
+<!-- Select a court using dropdown with forEach loop -->
+<select id="court" name="court" (change)="onCourtChange($event)">
+    <option *ngFor="let court of courts" [value]="court.id">
+        {{ court.name }}
+    </option>
+</select>
+
+<!-- select date -->
+<input type="date" id="date" name="date" (change)="onDateChange($event)">
+
+<!-- list of ranges that are buttons -->
+<div *ngFor="let range of bookingRanges">
+  <button (click)="onBookingToggle(range)" [disabled]="range.disabled">
+    {{ range.startHourString }} - {{ range.endHourString }}
+    </button>
+</div>
+
+
+</div>

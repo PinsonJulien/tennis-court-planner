@@ -44,9 +44,6 @@ export class UserAdminPage implements OnInit {
 
     ngOnInit(): void {
         this.refresh();
-        console.log('User Admin Page initialized');
-        console.log('Users:', this.users);
-        console.log('Roles:', this.roles);
     }
 
     protected refresh(): void {

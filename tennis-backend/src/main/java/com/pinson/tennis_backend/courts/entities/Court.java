@@ -81,4 +81,8 @@ public class Court {
         this.bookings.add(booking);
     }
 
+    public void removeBooking(Booking booking) {
+        this.bookings.remove(booking);
+    }
+
 }

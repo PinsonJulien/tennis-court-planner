@@ -4,14 +4,14 @@ import { RouterModule } from "@angular/router";
 
 @Component({
     standalone: true,
-    selector: 'app-admin-layout',
-    templateUrl: 'admin.layout.component.html',
-    styleUrls: ['./admin.layout.component.css'],
+    selector: 'app-auth-layout',
+    templateUrl: 'auth.layout.html',
+    styleUrls: ['./auth.layout.css'],
     imports: [
         CommonModule,
         RouterModule,
     ],
 })
-export class AdminLayout {
+export class AuthLayout {
     //
 }

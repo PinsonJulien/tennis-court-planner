@@ -10,6 +10,7 @@ import com.pinson.tennis_backend.courts.dtos.UpdateCourtDTO;
 import com.pinson.tennis_backend.courts.entities.Court;
 import com.pinson.tennis_backend.courts.repositories.ICourtRepository;
 import com.pinson.tennis_backend.file_storages.services.IFileStorageService;
+import com.pinson.tennis_backend.users.dtos.UserDTO;
 import com.pinson.tennis_backend.users.entities.User;
 import com.pinson.tennis_backend.users.repositories.IUserRepository;
 import jakarta.validation.Valid;
@@ -51,7 +52,7 @@ public class CourtService implements ICourtService {
     @Override
     public CourtDTO findById(Long id) {
         final Court court = this.courtRepository.findById(id).orElseThrow();
-        return CourtDTO.from(court);
+        return CourtDTO.from(court, true);
     }
 
     @Override
@@ -136,6 +137,26 @@ public class CourtService implements ICourtService {
         court.addBooking(booking);
         final Court updatedCourt = this.courtRepository.save(court);
 
+        return CourtDTO.from(updatedCourt, true);
+    }
+
+    @Override
+    public CourtDTO cancelBooking(Long id, Long bookingId, UserDTO userDTO) {
+        final Court court = this.courtRepository.findById(id).orElseThrow();
+        final User user = this.userRepository.findById(userDTO.id()).orElseThrow();
+
+        final Booking booking = court.getBookings().stream()
+            .filter(b -> b.getId().equals(bookingId))
+            .findFirst()
+            .orElseThrow();
+
+        if (!booking.getUser().getId().equals(user.getId()))
+            throw new IllegalArgumentException("User is not the owner of the booking");
+
+        court.removeBooking(booking);
+        this.bookingRepository.delete(booking);
+
+        final Court updatedCourt = this.courtRepository.save(court);
         return CourtDTO.from(updatedCourt, true);
     }
 

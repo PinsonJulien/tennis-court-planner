@@ -7,13 +7,23 @@ const routes: Routes = [
     redirectTo: 'home', 
     pathMatch: 'full' 
   },
-  /*{
+  {
     path: 'home',
-    loadChildren: () => import('./components/home/home.module').then(m => m.HomeModule)
-  },*/
+    redirectTo: 'courts',
+  },
+  {
+    path: '',
+    loadComponent: () => import('./components/home/layout/home.layout').then(m => m.HomeLayout),
+    children: [
+      {
+        path: 'courts',
+        loadComponent: () => import('./components/home/pages/courts/court.page').then(m => m.CourtPage)
+      }
+    ],
+  },
   { 
     path: 'auth',
-    loadComponent: () => import('./components/auths/layout/auth.layout.component').then(m => m.AuthLayout),
+    loadComponent: () => import('./components/auths/layout/auth.layout').then(m => m.AuthLayout),
     children: [
       {
         path: 'login',
@@ -23,7 +33,7 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    loadComponent: () => import('./components/admins/layout/admin.layout.component').then(m => m.AdminLayout),
+    loadComponent: () => import('./components/admins/layout/admin.layout').then(m => m.AdminLayout),
     children: [
       {
         path: '',
