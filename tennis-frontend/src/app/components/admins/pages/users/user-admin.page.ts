@@ -1,11 +1,17 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { ApiResponse } from "../../../../dtos/api/api.response.dto";
+import { ApiErrorDTO, ApiResponse } from "../../../../dtos/api/api.response.dto";
 import { UserService } from "../../../../services/user.service";
 import { RoleService } from "../../../../services/role.service";
 import { UserDTO } from "../../../../dtos/users/user.dto";
 import { RoleDTO } from "../../../../dtos/roles/role.dto";
 import { AddRoleToUserDTO } from "../../../../dtos/users/add-role-to-user.dto";
+import { MatTableModule } from "@angular/material/table";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatCardModule } from "@angular/material/card";
+import { NotificationService } from "../../../../services/notification.service";
 
 @Component({
     standalone: true,
@@ -13,7 +19,12 @@ import { AddRoleToUserDTO } from "../../../../dtos/users/add-role-to-user.dto";
     templateUrl: 'user-admin.page.html',
     styleUrls: ['user-admin.page.scss'],
     imports: [
-        CommonModule     
+        CommonModule,
+        MatTableModule,
+        MatCheckboxModule,
+        MatButtonModule,
+        MatIconModule,
+        MatCardModule,
     ],
     providers: []
 })
@@ -32,8 +43,9 @@ export class UserAdminPage implements OnInit {
      * ************************************************************************/
 
     constructor(
-        protected userService: UserService,
-        protected roleService: RoleService
+        private userService: UserService,
+        private roleService: RoleService,
+        private notificationService: NotificationService,
     ) {
         //
     }
@@ -55,7 +67,7 @@ export class UserAdminPage implements OnInit {
     protected fetchUsers(): void {
         this.userService.findAll().subscribe((response: ApiResponse<UserDTO[]>) => {
             if (response.error) {
-                console.error('Error fetching users:', response.error);
+                this.showErrorMessage(response.error);
                 return;
             }
 
@@ -66,7 +78,7 @@ export class UserAdminPage implements OnInit {
     protected fetchDeletedUsers(): void {
         this.userService.findAllDeleted().subscribe((response: ApiResponse<UserDTO[]>) => {
             if (response.error) {
-                console.error('Error fetching deleted users:', response.error);
+                this.showErrorMessage(response.error);
                 return;
             }
 
@@ -77,7 +89,7 @@ export class UserAdminPage implements OnInit {
     protected fetchRoles(): void {
         this.roleService.findAll().subscribe((response: ApiResponse<RoleDTO[]>) => {
             if (response.error) {
-                console.error('Error fetching roles:', response.error);
+                this.showErrorMessage(response.error);
                 return;
             }
 
@@ -88,20 +100,24 @@ export class UserAdminPage implements OnInit {
     protected deleteUser(user: UserDTO): void {
         this.userService.delete(user.id).subscribe((response: ApiResponse<void>) => {
             if (response.error) {
+                this.showErrorMessage(response.error);
                 return;
             }
 
             this.refresh();
+            this.showSuccessMessage('User deleted successfully');
         });
     }
 
     protected restoreUser(user: UserDTO): void {
         this.userService.restore(user.id).subscribe((response: ApiResponse<void>) => {
             if (response.error) {
+                this.showErrorMessage(response.error);
                 return;
             }
 
             this.refresh();
+            this.showSuccessMessage('User restored successfully');
         });
     }
 
@@ -110,20 +126,24 @@ export class UserAdminPage implements OnInit {
 
         this.userService.addRoleToUser(user.id, addRoleToUserDto).subscribe((response: ApiResponse<UserDTO>) => {
             if (response.error) {
+                this.showErrorMessage(response.error);
                 return;
             }
 
             this.refresh();
+            this.showSuccessMessage('Role added successfully');
         });
     }
 
     protected removeRoleFromUser(user: UserDTO, role: RoleDTO): void {
         this.userService.removeRoleFromUser(user.id, role.id).subscribe((response: ApiResponse<UserDTO>) => {
             if (response.error) {
+                this.showErrorMessage(response.error);
                 return;
             }
 
             this.refresh();
+            this.showSuccessMessage('Role removed successfully');
         });
     }
 
@@ -137,6 +157,14 @@ export class UserAdminPage implements OnInit {
         } else {
             this.addRoleToUser(user, role);
         }
+    }
+
+    protected showErrorMessage(error: ApiErrorDTO): void {
+        this.notificationService.showErrorMessage(error.message);
+    }
+
+    protected showSuccessMessage(message: string): void {
+        this.notificationService.showSuccessMessage(message);
     }
 
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "./api.service";
 import { LoginDTO } from "../dtos/auths/login.dto";
-import { BehaviorSubject, map, Observable, tap } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { ApiResponse } from "../dtos/api/api.response.dto";
 import { AuthenticationDTO } from "../dtos/auths/authentication.dto";
 import { RequestAction } from "./types/requests/request-action.enum";

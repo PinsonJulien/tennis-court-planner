@@ -15,7 +15,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatButtonModule } from "@angular/material/button";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatInputModule } from "@angular/material/input";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { NotificationService } from "../../../../services/notification.service";
 
 
 /**************************************************************************
@@ -47,7 +47,7 @@ type BookingRange = {
       MatSelectModule,
       MatDatepickerModule,
       MatButtonModule,
-      MatNativeDateModule,
+      MatNativeDateModule
     ],
     providers: []
   })
@@ -73,7 +73,7 @@ export class CourtPage implements OnInit {
     constructor(
         protected courtService: CourtService,
         protected authService: AuthService,
-        private snackBar: MatSnackBar
+        private notificationService: NotificationService,
     ) {
         //
     }
@@ -123,6 +123,7 @@ export class CourtPage implements OnInit {
             .subscribe((response: ApiResponse<CourtDTO>) => {
                 if (response.data) {
                     this.selectedCourt = response.data;
+                    this.showSuccessMessage('Booking created successfully');
                 } else {
                     this.showErrorMessage(response.error!);
                 }
@@ -140,6 +141,7 @@ export class CourtPage implements OnInit {
                 if (response.data) {
                     this.selectedCourt = response.data!;
                     this.hasUserOwnedBooking = false;
+                    this.showSuccessMessage('Booking cancelled successfully');
                 } else {
                     this.showErrorMessage(response.error!);
                 }
@@ -252,9 +254,10 @@ export class CourtPage implements OnInit {
     }
 
     protected showErrorMessage(error: ApiErrorDTO) {
-        this.snackBar.open(error.message, 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-        });
+        this.notificationService.showErrorMessage(error.message);
+    }
+
+    protected showSuccessMessage(message: string) {
+        this.notificationService.showSuccessMessage(message);
     }
 }

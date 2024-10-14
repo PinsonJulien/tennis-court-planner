@@ -1,8 +1,8 @@
 export class PartialUpdateCourtDTO {
-    name: string;
-    description: string;
-    address: string;
-    imageUrl: string;
+    name?: string;
+    description?: string;
+    address?: string;
+    imageUrl?: string;
 
     constructor(name: string, description: string, address: string, imageUrl: string) {
         this.name = name;
