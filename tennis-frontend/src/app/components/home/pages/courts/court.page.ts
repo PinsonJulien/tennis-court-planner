@@ -8,6 +8,8 @@ import { FormsModule } from "@angular/forms";
 import { catchError, map, of } from "rxjs";
 import { CreateBookingForCourtDTO } from "../../../../dtos/courts/create-booking-for-court.dto";
 import { DateHelper } from "../../../../helpers/date.helper";
+import { AuthService } from "../../../../services/auth.service";
+import { UserDTO } from "../../../../dtos/users/user.dto";
 
 
 /**************************************************************************
@@ -20,7 +22,6 @@ type BookingRange = {
     startHourString: string;
     endHourString: string;
     court: CourtDTO;
-    disabled: boolean;
     ownedByUser: boolean;
     booking: BookingDTO | null;
 };
@@ -48,6 +49,8 @@ export class CourtPage implements OnInit {
     protected selectedCourt: CourtDTO | null = null;
     protected selectedDate: Date = new Date();
     protected bookingRanges: BookingRange[] = [];
+    protected currentUser: UserDTO | null = null;
+    protected hasUserOwnedBooking: boolean = false;
 
 
     /**************************************************************************
@@ -56,6 +59,7 @@ export class CourtPage implements OnInit {
 
     constructor(
         protected courtService: CourtService,
+        protected authService: AuthService
     ) {
         //
     }
@@ -66,6 +70,10 @@ export class CourtPage implements OnInit {
 
     ngOnInit(): void {
         this.refresh();
+
+        this.authService.currentUser.subscribe((user: UserDTO | null) => {
+            this.currentUser = user;
+        });
     }
 
     protected refresh() {
@@ -84,9 +92,6 @@ export class CourtPage implements OnInit {
     }
 
     protected onBookingToggle(range: BookingRange) {
-        if (range.disabled)
-            return;
-
         if (range.ownedByUser)
             this.cancelBooking(range);
         else 
@@ -101,11 +106,12 @@ export class CourtPage implements OnInit {
 
         this.courtService.book(range.court.id, createBookingForCourtDTO)
             .subscribe((response: ApiResponse<CourtDTO>) => {
-                if (response.error) {
-                    return;
+                if (response.data) {
+                    this.selectedCourt = response.data;
+                } else {
+                    console.log(response.error);
                 }
 
-                this.selectedCourt = response.data!;
                 this.generateBookingRanges();
             });
     }
@@ -116,11 +122,13 @@ export class CourtPage implements OnInit {
 
         this.courtService.cancelBooking(range.court.id, range.booking!.id)
             .subscribe((response: ApiResponse<CourtDTO>) => {
-                if (response.error) {
-                    return;
+                if (response.data) {
+                    this.selectedCourt = response.data!;
+                    this.hasUserOwnedBooking = false;
+                } else {
+                    console.log(response.error);
                 }
-
-                this.selectedCourt = response.data!;
+                
                 this.generateBookingRanges();
             });
     }
@@ -165,12 +173,11 @@ export class CourtPage implements OnInit {
 
             const booking = this.searchForBookingByRange(bookings, start, end);
 
-            let disabled = (start < now);
             let ownedByUser = false;
 
             if (booking) {
                 ownedByUser = this.isBookingOwnedByUser(booking);
-                disabled = !ownedByUser;
+                this.hasUserOwnedBooking = true;
             }           
         
             const range: BookingRange = {
@@ -179,7 +186,6 @@ export class CourtPage implements OnInit {
                 startHourString,
                 endHourString,
                 court,
-                disabled,
                 ownedByUser,
                 booking
             };
@@ -201,12 +207,28 @@ export class CourtPage implements OnInit {
         return null
     }
 
-    protected isBookingFromPast(booking: BookingDTO): boolean {
-        return new Date(booking.startDateTime) < new Date();
+    protected isBookingDisabled(range: BookingRange): boolean {
+        // If from the past, disable
+        if (range.start < new Date())
+            return true;
+
+        // If the user own the booking, enable
+        if (range.ownedByUser)
+            return false;
+
+        // If the user own at least one booking from the same court at the same time, disable
+        if (this.hasUserOwnedBooking)
+            return true;
+
+        // If the user does not own any booking, and the slot is already booked, disable
+        if (range.booking !== null)
+            return true;
+
+        return false;
     }
 
+
     protected isBookingOwnedByUser(booking: BookingDTO): boolean {
-        // TODO : Get logged user and compare by id.
-        return booking.user === null;
+        return this.currentUser !== null && booking.user !== null && booking.user.id === this.currentUser.id;
     }
 }

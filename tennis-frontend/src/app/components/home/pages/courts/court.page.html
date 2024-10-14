@@ -12,9 +12,8 @@
 
 <!-- list of ranges that are buttons -->
 <div *ngFor="let range of bookingRanges">
-  <button (click)="onBookingToggle(range)" [disabled]="range.disabled">
-    {{ range.startHourString }} - {{ range.endHourString }}
-    </button>
+  <button (click)="onBookingToggle(range)" [disabled]="isBookingDisabled(range)">{{ range.startHourString }} - {{ range.endHourString }}</button>
+  
 </div>
 
 

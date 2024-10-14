@@ -153,6 +153,10 @@ public class CourtService implements ICourtService {
         if (!booking.getUser().getId().equals(user.getId()))
             throw new IllegalArgumentException("User is not the owner of the booking");
 
+        // Cannot cancel a booking that has already passed
+        if (booking.getEndDateTime().isBefore(LocalDateTime.now()))
+            throw new IllegalArgumentException("Cannot cancel a booking that has already passed");
+
         court.removeBooking(booking);
         this.bookingRepository.delete(booking);
 
