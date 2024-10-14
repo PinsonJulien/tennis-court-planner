@@ -10,14 +10,12 @@ import com.pinson.tennis_backend.auths.helpers.JwtHelper;
 import com.pinson.tennis_backend.auths.services.IAuthService;
 import com.pinson.tennis_backend.commons.controllers.BaseController;
 import com.pinson.tennis_backend.commons.responses.BaseApiResponse;
+import com.pinson.tennis_backend.users.dtos.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -102,5 +100,26 @@ public class AuthController extends BaseController {
         }
     }
 
+    @GetMapping("/me")
+    public BaseApiResponse<UserDTO> me() {
+        final String method = "auth.me";
+
+        try {
+            final UserDTO user = this.authService.getCurrentUser();
+
+            return this.createResponse(
+                HttpStatus.OK,
+                method,
+                user
+            );
+        } catch (Exception e) {
+            return this.createExceptionResponse(
+                HttpStatus.BAD_REQUEST,
+                method,
+                "Auth",
+                e
+            );
+        }
+    }
 
 }

@@ -91,11 +91,9 @@ export abstract class ApiService {
         // Automatically map the response to an ApiResponse object
         return response.pipe(
             map((res: any) => {
-                console.error(res);
                 return new ApiResponse<T>(res);
             }),
             catchError((err) => {
-                console.error(err);
                 // On 401 Unauthorized, remove the token from local storage.
                 if (err.status === 401) {
                     this.localStorage.removeBearerToken();

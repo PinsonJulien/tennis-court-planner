@@ -4,6 +4,8 @@ import com.pinson.tennis_backend.auths.dtos.*;
 import com.pinson.tennis_backend.auths.providers.IJwtTokenProvider;
 import com.pinson.tennis_backend.users.dtos.CreateUserDTO;
 import com.pinson.tennis_backend.users.dtos.UserDTO;
+import com.pinson.tennis_backend.users.entities.User;
+import com.pinson.tennis_backend.users.repositories.IUserRepository;
 import com.pinson.tennis_backend.users.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,9 @@ public class AuthService implements IAuthService {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IUserRepository userRepository;
 
     /*************************************************************************
      * IAuthService implementation
@@ -60,6 +65,11 @@ public class AuthService implements IAuthService {
      *************************************************************************/
 
     protected JwtDTO authenticate(final String username, final String password) {
+        // Disallow authentication if the user is disabled.
+        final User user = this.userRepository.findByUsername(username).orElseThrow();
+        if (!user.isEnabled())
+            throw new IllegalArgumentException("Cannot authenticate disabled user.");
+
         Authentication authentication = this.authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 username,
