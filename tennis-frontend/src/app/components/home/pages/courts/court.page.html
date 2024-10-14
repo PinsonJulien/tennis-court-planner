@@ -1,20 +1,43 @@
-<div>
+<div class="court-page-container">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>
+                <h1>Court booking</h1>
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="inputs">
+                <mat-form-field>
+                    <mat-label>Select a court</mat-label>
+                    <mat-select (selectionChange)="onCourtChange($event)">
+                        <mat-option  *ngFor="let court of courts" [value]="court.id">
+                            {{ court.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+    
+                <mat-form-field>
+                    <mat-label>Select a date</mat-label>
+                    <input matInput [matDatepicker]="picker" placeholder="Choose a date" (dateChange)="onDateChange($event)">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>    
+            </div>
 
-<!-- Select a court using dropdown with forEach loop -->
-<select id="court" name="court" (change)="onCourtChange($event)">
-    <option *ngFor="let court of courts" [value]="court.id">
-        {{ court.name }}
-    </option>
-</select>
-
-<!-- select date -->
-<input type="date" id="date" name="date" (change)="onDateChange($event)">
-
-<!-- list of ranges that are buttons -->
-<div *ngFor="let range of bookingRanges">
-  <button (click)="onBookingToggle(range)" [disabled]="isBookingDisabled(range)">{{ range.startHourString }} - {{ range.endHourString }}</button>
-  
-</div>
-
-
+            <div class="booking-section">
+                <h2>Choose a booking</h2>
+                <div class="bookings">
+                    <button 
+                        mat-raised-button 
+                        [color]="range.ownedByUser ? 'warn' : 'primary'"
+                        (click)="onBookingToggle(range)" 
+                        [disabled]="isBookingDisabled(range)" 
+                        *ngFor="let range of bookingRanges"
+                    >
+                        {{ range.startHourString }} - {{ range.endHourString }}
+                    </button>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
 </div>

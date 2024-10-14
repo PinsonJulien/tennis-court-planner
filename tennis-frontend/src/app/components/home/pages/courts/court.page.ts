@@ -1,15 +1,21 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { ApiResponse } from "../../../../dtos/api/api.response.dto";
+import { ApiErrorDTO, ApiResponse } from "../../../../dtos/api/api.response.dto";
 import { CourtService } from "../../../../services/court.service";
 import { CourtDTO } from "../../../../dtos/courts/court.dto";
 import { BookingDTO } from "../../../../dtos/bookings/booking.dto";
 import { FormsModule } from "@angular/forms";
-import { catchError, map, of } from "rxjs";
 import { CreateBookingForCourtDTO } from "../../../../dtos/courts/create-booking-for-court.dto";
-import { DateHelper } from "../../../../helpers/date.helper";
 import { AuthService } from "../../../../services/auth.service";
 import { UserDTO } from "../../../../dtos/users/user.dto";
+import { MatCardModule } from "@angular/material/card";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSelectChange, MatSelectModule } from "@angular/material/select";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatButtonModule } from "@angular/material/button";
+import { MatNativeDateModule } from "@angular/material/core";
+import { MatInputModule } from "@angular/material/input";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 
 /**************************************************************************
@@ -34,7 +40,14 @@ type BookingRange = {
     styleUrls: ['court.page.scss'],
     imports: [
       CommonModule,
-      FormsModule,   
+      FormsModule,
+      MatCardModule,
+      MatFormFieldModule,
+      MatInputModule,
+      MatSelectModule,
+      MatDatepickerModule,
+      MatButtonModule,
+      MatNativeDateModule,
     ],
     providers: []
   })
@@ -47,7 +60,7 @@ export class CourtPage implements OnInit {
     protected courts: CourtDTO[] = [];
 
     protected selectedCourt: CourtDTO | null = null;
-    protected selectedDate: Date = new Date();
+    protected selectedDate: Date | null = null;
     protected bookingRanges: BookingRange[] = [];
     protected currentUser: UserDTO | null = null;
     protected hasUserOwnedBooking: boolean = false;
@@ -59,7 +72,8 @@ export class CourtPage implements OnInit {
 
     constructor(
         protected courtService: CourtService,
-        protected authService: AuthService
+        protected authService: AuthService,
+        private snackBar: MatSnackBar
     ) {
         //
     }
@@ -84,6 +98,7 @@ export class CourtPage implements OnInit {
         this.courtService.findAll()
             .subscribe((response: ApiResponse<CourtDTO[]>) => {
                 if (response.error) {
+                    this.showErrorMessage(response.error!);
                     return;
                 }
 
@@ -109,7 +124,7 @@ export class CourtPage implements OnInit {
                 if (response.data) {
                     this.selectedCourt = response.data;
                 } else {
-                    console.log(response.error);
+                    this.showErrorMessage(response.error!);
                 }
 
                 this.generateBookingRanges();
@@ -126,33 +141,37 @@ export class CourtPage implements OnInit {
                     this.selectedCourt = response.data!;
                     this.hasUserOwnedBooking = false;
                 } else {
-                    console.log(response.error);
+                    this.showErrorMessage(response.error!);
                 }
                 
                 this.generateBookingRanges();
             });
     }
 
-    protected onCourtChange(event: any) {
-        const courtId = parseInt(event.target.value);
+    protected onCourtChange(event: MatSelectChange) {
+        const courtId = parseInt(event.value);
 
         this.courtService.findById(courtId)
             .subscribe((response: ApiResponse<CourtDTO>) => {
                 if (response.error) {
+                    this.showErrorMessage(response.error!);
                     return;
                 }
-
+                this.hasUserOwnedBooking = false;
                 this.selectedCourt = response.data!;
+                this.generateBookingRanges();
             });
     }
 
     protected onDateChange(event: any) {
         this.selectedDate = new Date(event.target.value);
-        if (this.selectedCourt !== null)
-            this.generateBookingRanges();
+        this.generateBookingRanges();
     }
 
     protected generateBookingRanges() {
+        if (this.selectedCourt === null || this.selectedDate === null)
+            return;
+
         const court = this.selectedCourt!;
         const bookings = court.bookings;
         const ranges: BookingRange[] = [];
@@ -230,5 +249,12 @@ export class CourtPage implements OnInit {
 
     protected isBookingOwnedByUser(booking: BookingDTO): boolean {
         return this.currentUser !== null && booking.user !== null && booking.user.id === this.currentUser.id;
+    }
+
+    protected showErrorMessage(error: ApiErrorDTO) {
+        this.snackBar.open(error.message, 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+        });
     }
 }

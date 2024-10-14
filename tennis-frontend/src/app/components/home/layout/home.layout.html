@@ -1,3 +1,41 @@
-<div>
-    <router-outlet></router-outlet>
+
+<div class="layout-container">
+    <mat-sidenav-container fullscreen>        
+        <mat-sidenav #sidenav mode="side">
+            <mat-nav-list>
+                @for (link of links; track link) {
+                    <a
+                      [routerLink]="link.route"
+                      routerLinkActive
+                      #rla="routerLinkActive"
+                      [activated]="rla.isActive"
+                      mat-list-item
+                    >
+                      {{ link.title }}
+                    </a>
+                  }
+            </mat-nav-list>
+        </mat-sidenav>
+
+        <mat-sidenav-content>
+            <mat-toolbar color="primary">
+                <div class="navbar-left">
+                    <button mat-icon-button (click)="sidenav.toggle()">
+                        <mat-icon>menu</mat-icon>
+                    </button>
+                    <span>Tennis Masters</span>
+                </div>
+                <div class="navbar-right">
+                    <button mat-button (click)="logout()" color="warn">
+                        <mat-icon>
+                            exit_to_app
+                        </mat-icon>
+                        Logout
+                    </button>
+                </div>
+            </mat-toolbar>
+
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
 </div>

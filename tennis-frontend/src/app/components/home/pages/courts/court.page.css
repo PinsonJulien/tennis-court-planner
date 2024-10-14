@@ -1,0 +1,21 @@
+mat-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.inputs {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 2em;
+}
+
+.bookings {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1em;
+}
