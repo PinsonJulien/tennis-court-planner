@@ -1,0 +1,12 @@
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
