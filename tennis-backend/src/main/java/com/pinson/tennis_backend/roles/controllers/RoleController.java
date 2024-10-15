@@ -25,7 +25,6 @@ public class RoleController extends BaseController {
     private IRoleService roleService;
 
     @GetMapping("/")
-    //@PreAuthorize("hasRole('SECRETARY')")
     public BaseApiResponse<List<RoleDTO>> index() {
         final String method = "roles.index";
         final List<RoleDTO> roles = this.roleService.findAll();

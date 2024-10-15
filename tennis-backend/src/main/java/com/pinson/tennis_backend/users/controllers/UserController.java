@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -75,9 +77,22 @@ public class UserController extends BaseController {
 
     @DeleteMapping("/{id}")
     public BaseApiResponse<UserDTO> destroy(
-        @PathVariable final UUID id
+        @PathVariable final UUID id,
+        @AuthenticationPrincipal final UserDetails userDetails
     ) {
         final String method = "users.destroy";
+
+        // Users cannot delete themselves, at least, not using this route.
+        final UserDTO authenticatedUser = this.userService.findByUsername(userDetails.getUsername());
+        if (id.equals(authenticatedUser.id())) {
+            return this.createExceptionResponse(
+                HttpStatus.BAD_REQUEST,
+                method,
+                "User",
+                new Exception("Users cannot delete themselves.")
+            );
+        }
+
         try {
             this.userService.delete(id);
 
@@ -102,9 +117,22 @@ public class UserController extends BaseController {
 
     @PostMapping("/{id}/restore")
     public BaseApiResponse<UserDTO> restore(
-        @PathVariable final UUID id
+        @PathVariable final UUID id,
+        @AuthenticationPrincipal final UserDetails userDetails
     ) {
         final String method = "users.restore";
+
+        // Users cannot restore themselves
+        final UserDTO authenticatedUser = this.userService.findByUsername(userDetails.getUsername());
+        if (id.equals(authenticatedUser.id())) {
+            return this.createExceptionResponse(
+                HttpStatus.BAD_REQUEST,
+                method,
+                "User",
+                new Exception("Users cannot restore themselves.")
+            );
+        }
+
         try {
             final UserDTO user = this.userService.restore(id);
 
@@ -130,9 +158,22 @@ public class UserController extends BaseController {
     @PostMapping("/{id}/roles")
     public BaseApiResponse<UserDTO> addRole(
         @PathVariable final UUID id,
-        @RequestBody final AddRoleToUserRequestDTO body
+        @RequestBody final AddRoleToUserRequestDTO body,
+        @AuthenticationPrincipal final UserDetails userDetails
     ) {
         final String method = "users.roles.add";
+
+        // Users cannot add roles to themselves
+        final UserDTO authenticatedUser = this.userService.findByUsername(userDetails.getUsername());
+        if (id.equals(authenticatedUser.id())) {
+            return this.createExceptionResponse(
+                HttpStatus.BAD_REQUEST,
+                method,
+                "User",
+                new Exception("Users cannot add roles to themselves.")
+            );
+        }
+
         try {
             final UserDTO user = this.userService.addRole(id, body.roleId());
 
@@ -158,9 +199,22 @@ public class UserController extends BaseController {
     @DeleteMapping("/{id}/roles/{roleId}")
     public BaseApiResponse<UserDTO> removeRole(
         @PathVariable final UUID id,
-        @PathVariable final Long roleId
+        @PathVariable final Long roleId,
+        @AuthenticationPrincipal final UserDetails userDetails
     ) {
         final String method = "users.roles.remove";
+
+        // Users cannot remove roles from themselves
+        final UserDTO authenticatedUser = this.userService.findByUsername(userDetails.getUsername());
+        if (id.equals(authenticatedUser.id())) {
+            return this.createExceptionResponse(
+                    HttpStatus.BAD_REQUEST,
+                    method,
+                    "User",
+                    new Exception("Users cannot remove roles to themselves.")
+            );
+        }
+
         try {
             final UserDTO user = this.userService.removeRole(id, roleId);
 
