@@ -5,6 +5,7 @@ import com.pinson.tennis_backend.commons.responses.BaseApiResponse;
 import com.pinson.tennis_backend.users.dtos.UserDTO;
 import com.pinson.tennis_backend.users.dtos.requests.AddRoleToUserRequestDTO;
 import com.pinson.tennis_backend.users.services.IUserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,7 +159,7 @@ public class UserController extends BaseController {
     @PostMapping("/{id}/roles")
     public BaseApiResponse<UserDTO> addRole(
         @PathVariable final UUID id,
-        @RequestBody final AddRoleToUserRequestDTO body,
+        @Valid @RequestBody final AddRoleToUserRequestDTO body,
         @AuthenticationPrincipal final UserDetails userDetails
     ) {
         final String method = "users.roles.add";
@@ -175,7 +176,7 @@ public class UserController extends BaseController {
         }
 
         try {
-            final UserDTO user = this.userService.addRole(id, body.roleId());
+            final UserDTO user = this.userService.addRole(id, body.getRoleId());
 
             return this.createResponse(
                 HttpStatus.OK,

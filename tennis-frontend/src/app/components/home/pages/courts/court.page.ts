@@ -167,6 +167,7 @@ export class CourtPage implements OnInit {
 
     protected onDateChange(event: any) {
         this.selectedDate = new Date(event.target.value);
+        this.hasUserOwnedBooking = false;
         this.generateBookingRanges();
     }
 
@@ -198,7 +199,8 @@ export class CourtPage implements OnInit {
 
             if (booking) {
                 ownedByUser = this.isBookingOwnedByUser(booking);
-                this.hasUserOwnedBooking = true;
+                if (ownedByUser)
+                    this.hasUserOwnedBooking = true;
             }           
         
             const range: BookingRange = {

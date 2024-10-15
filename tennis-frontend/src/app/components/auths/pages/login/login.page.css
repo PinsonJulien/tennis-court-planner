@@ -3,13 +3,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
   }
   .auth-card {
     margin: 1em;
   }
   .auth-sections {
-
     display: flex;
     justify-content: center;
     align-items: center;
